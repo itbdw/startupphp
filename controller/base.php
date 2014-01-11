@@ -13,7 +13,7 @@ class Controller_Base {
 
     public function __construct() {
 //        var_dump($_SERVER);
-        $this->output['static_base_url'] = $_SERVER['REQUEST_URI'];
+        $this->output['static_base_url'] = dirname($_SERVER['REQUEST_URI']);
     }
 
     /**
