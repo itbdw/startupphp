@@ -13,7 +13,13 @@ class Controller_Base {
 
     public function __construct() {
 //        var_dump($_SERVER);
-        $this->output['static_base_url'] = dirname($_SERVER['REQUEST_URI']);
+        $base = $_SERVER['REQUEST_URI'];
+        $offset = stripos($_SERVER['REQUEST_URI'], '?');
+        if ($offset !== false) {
+            $base = substr($_SERVER['REQUEST_URI'], 0, $offset);
+        }
+//        echo $base;
+        $this->output['static_base_url'] = $base;
     }
 
     /**
