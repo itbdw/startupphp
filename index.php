@@ -15,10 +15,12 @@ error_reporting(E_ALL);//线上注释掉此行
 define('ROOT', __DIR__);
 define('DS', DIRECTORY_SEPARATOR);
 include ROOT . DS . 'config' . DS . 'main.config.php';
+include ROOT . DS . 'config' . DS . 'city.config.php';
 
 function autoload_class($className) {
     $dir = substr($className, 0, stripos('_', $className));
     $file = strtolower(ROOT . DS . str_replace('_', DS, $className) . '.php');
+
     if (file_exists($file)) {
         include $file;
     } else {
