@@ -12,9 +12,9 @@ class Controller_Index extends Controller_Base {
         $location = $ipope->getAddr($ip);
         var_dump($location);
 
-        $city['province'] = $_SERVER['$CONF_PROVINCE'];
-        $city['city']     = $_SERVER['$CONF_CITY'];
-        $city['county']   = $_SERVER['$CONF_COUNTY'];
+        $city['province'] = $GLOBALS['CONF_PROVINCE'];
+        $city['city']     = $GLOBALS['CONF_CITY'];
+        $city['county']   = $GLOBALS['CONF_COUNTY'];
 
         $this->output['city'] = json_encode($city);
 
