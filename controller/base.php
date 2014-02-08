@@ -12,6 +12,7 @@ class Controller_Base {
     public $output;
 
     public function __construct() {
+        var_dump($_SERVER);
         $base = $_SERVER['REQUEST_URI'];
         $offset = stripos($_SERVER['REQUEST_URI'], '?');
         if ($offset !== false) {
