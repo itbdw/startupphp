@@ -18,6 +18,8 @@ class Controller_Base {
         if ($offset !== false) {
             $base = substr($_SERVER['REQUEST_URI'], 0, $offset);
         }
+
+        $base = dirname($base);
         $this->output['static_base_url'] = rtrim($base, '/');
     }
 
