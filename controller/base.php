@@ -12,15 +12,8 @@ class Controller_Base {
     public $output;
 
     public function __construct() {
-        var_dump($_SERVER);
-        $base = $_SERVER['REQUEST_URI'];
-        $offset = stripos($_SERVER['REQUEST_URI'], '?');
-        if ($offset !== false) {
-            $base = substr($_SERVER['REQUEST_URI'], 0, $offset);
-        }
-
-        $base = dirname($base);
-        $this->output['static_base_url'] = rtrim($base, '/');
+        $base = $_SERVER['SCRIPT_NAME'];
+        $this->output['static_base_url'] = dirname($base);
     }
 
     /**
