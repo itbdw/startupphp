@@ -7,10 +7,13 @@
 class Controller_Index extends Controller_Base {
 
     public function index() {
+
+//        var_dump($this->output);
         $ip = $_SERVER['REMOTE_ADDR'];
         $ipope = new Library_Ip();
         $location = $ipope->getAddr($ip);
-        var_dump($location);
+//        var_dump($location);
+        $this->output['location'] = $location;
 
         $city['province'] = $GLOBALS['CONF_PROVINCE'];
         $city['city']     = $GLOBALS['CONF_CITY'];

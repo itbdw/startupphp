@@ -6,6 +6,14 @@
     <link rel="stylesheet" href="<?php echo $static_base_url ?>/static/css/bootstrap-theme.min.css"/>
 </head>
 <body>
+
+<div>
+    <p>你的ip地址是<span class="label label-success"><?php echo $location['ip']; ?></span>，来自<span class="label label-info"><?php
+            echo
+            $location['area'];
+            ?></span></p>
+
+</div>
 <table class="table table-hover">
     <thead></thead>
     <tbody>
