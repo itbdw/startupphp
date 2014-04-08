@@ -46,8 +46,6 @@ class  Core {
             DEFAULT_CONTROLLER;
         $action = !empty($_REQUEST[DEFAULT_ACTION_NAME]) ? trim($_REQUEST[DEFAULT_ACTION_NAME]) : DEFAULT_ACTION;
 
-//        var_dump($controller, $action);
-
         $controller =  'controller_' . $controller;
         $controller = str_replace('_', ' ', $controller);
         $controller = ucwords($controller);
@@ -58,15 +56,6 @@ class  Core {
         } else {
             trigger_error(404 . '|' . $action . 'not found');
         }
-    }
-
-    /**
-     * 简单过滤函数
-     */
-    public function filter() {
-        $_REQUEST = $_REQUEST;
-        $_GET = $_GET;
-        $_POST = $_POST;
     }
 }
 
