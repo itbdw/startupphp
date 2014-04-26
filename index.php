@@ -5,12 +5,13 @@
  * 规范：文件名全部小写，类名从顶级目录开始，驼峰式大写如 Model_Base
  *
  * 入口文件
+ *
  * @author zhao.binyan
  * @since 2014-01-11
  */
 
 ini_set('display_errors', 'On');
-error_reporting(E_ALL);//线上注释掉此行
+error_reporting(E_ALL); //线上注释掉此行
 
 define('ROOT', __DIR__);
 define('DS', DIRECTORY_SEPARATOR);
@@ -18,15 +19,16 @@ include ROOT . DS . 'config' . DS . 'main.config.php';
 include ROOT . DS . 'config' . DS . 'city.config.php';
 
 function autoload_class($className) {
-    $dir = substr($className, 0, stripos('_', $className));
+//    $dir = substr($className, 0, stripos('_', $className));
     $file = strtolower(ROOT . DS . str_replace('_', DS, $className) . '.php');
 
     if (file_exists($file)) {
         include $file;
     } else {
-        trigger_error(404 . '|' .$dir . 'not found');
+        trigger_error(404 . ' | ' . $file . 'not found!');
     }
 }
+
 spl_autoload_register('autoload_class');
 
 /**
@@ -34,7 +36,7 @@ spl_autoload_register('autoload_class');
  */
 class  Core {
     public function __construct() {
-        $this->filter();
+
     }
 
     public function index() {
@@ -44,29 +46,28 @@ class  Core {
     public function dispatch() {
         $controller = !empty($_REQUEST[DEFAULT_CONTROLLER_NAME]) ? trim($_REQUEST[DEFAULT_CONTROLLER_NAME]) :
             DEFAULT_CONTROLLER;
-        $action = !empty($_REQUEST[DEFAULT_ACTION_NAME]) ? trim($_REQUEST[DEFAULT_ACTION_NAME]) : DEFAULT_ACTION;
+        $action     = !empty($_REQUEST[DEFAULT_ACTION_NAME]) ? trim($_REQUEST[DEFAULT_ACTION_NAME]) : DEFAULT_ACTION;
 
-//        var_dump($controller, $action);
-
-        $controller =  'controller_' . $controller;
+        $controller = 'controller_' . $controller;
         $controller = str_replace('_', ' ', $controller);
         $controller = ucwords($controller);
         $controller = str_replace(' ', '_', $controller);
+        $controller = str_replace('..', '', $controller);
+        $file       = strtolower(ROOT . DS . str_replace('_', DS, $controller) . '.php');
+//        echo $file;
+
+        if (!file_exists($file) || !is_readable($file)) {
+            $controller = 'controller_base';
+            $action     = 'errorPage';
+            error_log($file . ' not found at init');
+        }
+
         $controller = new $controller();
         if (method_exists($controller, $action)) {
             $controller->$action();
         } else {
             trigger_error(404 . '|' . $action . 'not found');
         }
-    }
-
-    /**
-     * 简单过滤函数
-     */
-    public function filter() {
-        $_REQUEST = $_REQUEST;
-        $_GET = $_GET;
-        $_POST = $_POST;
     }
 }
 
