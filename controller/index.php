@@ -34,26 +34,12 @@ class Controller_Index extends Controller_Base {
         $this->display('welcome.php');
     }
 
-    /**
-     * 测试mysqli类，线上请删除
-     */
-    public function testMysqli() {
-        $db = new Library_Mysqli('localhost', 'root', '123456');
-        $db->select_db('startupphp');
-
-        $where = array('name' => 'sds');
-
-        $ret = $db->update_array('test', array('hello' => 2434), $where);
+    public function testDB() {
+        $db = new Model_Base();
+        $handle = $db->getMysql('mysql_db');
+        $ret = $handle->insert_array('seemimi_post', array('title'=>time(), 'content'=>'ss'));
         var_dump($ret);
-
-        $ret = $db->delete_array('test', array('id' => '2434'));
+        $ret = $handle->find_array('seemimi_post');
         var_dump($ret);
-
-        $ret = $db->find_array('test');
-        var_dump($ret);
-
-        $count = $db->find_count('test', $where);
-        var_dump($count);
-
     }
 }
