@@ -25,8 +25,6 @@ function autoload_class($className) {
         include $file;
     } else {
         trigger_error(404 . ' | ' .$file . 'not found!');
-//        die("error to load the file!");
-        autoload_class('Base');
     }
 }
 spl_autoload_register('autoload_class');
@@ -52,6 +50,14 @@ class  Core {
         $controller = str_replace('_', ' ', $controller);
         $controller = ucwords($controller);
         $controller = str_replace(' ', '_', $controller);
+        $controller = str_replace('..', '', $controller);
+        $file = ROOT . DS . $controller;
+
+        if (!file_exists($file) || is_readable($file)) {
+            $controller = 'controller_base';
+            $action = 'errorPage';
+        }
+
         $controller = new $controller();
         if (method_exists($controller, $action)) {
             $controller->$action();

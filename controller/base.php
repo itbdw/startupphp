@@ -42,7 +42,7 @@ class Controller_Base {
         }
     }
 
-    public function errorPage($code=0,$msg='') {
+    public function errorPage($code=404,$msg='error found') {
         die("error_founded, $code, $msg");
     }
 }
