@@ -17,6 +17,7 @@ define('ROOT', __DIR__);
 define('DS', DIRECTORY_SEPARATOR);
 include ROOT . DS . 'config' . DS . 'main.config.php';
 include ROOT . DS . 'config' . DS . 'city.config.php';
+include ROOT . DS . 'config' . DS . 'db.config.php';
 
 function autoload_class($className) {
 //    $dir = substr($className, 0, stripos('_', $className));

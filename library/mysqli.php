@@ -12,8 +12,16 @@
 class Library_Mysqli extends Mysqli {
     protected $database;
 
-    public function __construct($host, $username = null, $password = null, $port = null, $socket = null) {
-        parent::__construct($host, $username, $password, $port, $socket);
+    /**
+     * @param string $host
+     * @param null   $username
+     * @param null   $password
+     * @param null   $dbname
+     * @param null   $port
+     * @param null   $socket
+     */
+    public function __construct($host, $username = null, $password = null, $dbname=null, $port = null, $socket = null) {
+        parent::__construct($host, $username, $password, $dbname, $port, $socket);
     }
 
     public function select_db($db) {
