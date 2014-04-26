@@ -51,11 +51,13 @@ class  Core {
         $controller = ucwords($controller);
         $controller = str_replace(' ', '_', $controller);
         $controller = str_replace('..', '', $controller);
-        $file = ROOT . DS . $controller;
+        $file = strtolower(ROOT . DS . str_replace('_', DS, $controller) . '.php');
+//        echo $file;
 
-        if (!file_exists($file) || is_readable($file)) {
+        if (!file_exists($file) || !is_readable($file)) {
             $controller = 'controller_base';
             $action = 'errorPage';
+            error_log($file . ' not found at init');
         }
 
         $controller = new $controller();
