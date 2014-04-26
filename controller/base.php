@@ -15,7 +15,7 @@ class Controller_Base {
 
     public function __construct() {
         $base                            = $_SERVER['SCRIPT_NAME'];
-        $this->output['static_base_url'] = dirname($base);
+        $this->output['static_base_url'] = rtrim(dirname($base), '/');
     }
 
     /**
