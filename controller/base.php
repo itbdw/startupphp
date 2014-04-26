@@ -41,4 +41,8 @@ class Controller_Base {
             exit();
         }
     }
+
+    public function errorPage($code=0,$msg='') {
+        die("error_founded, $code, $msg");
+    }
 }

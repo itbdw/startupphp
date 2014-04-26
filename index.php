@@ -25,7 +25,8 @@ function autoload_class($className) {
         include $file;
     } else {
         trigger_error(404 . ' | ' .$file . 'not found!');
-        die("error to load the file!");
+//        die("error to load the file!");
+        autoload_class('Base');
     }
 }
 spl_autoload_register('autoload_class');
