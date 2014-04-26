@@ -34,7 +34,7 @@ spl_autoload_register('autoload_class');
  */
 class  Core {
     public function __construct() {
-        $this->filter();
+
     }
 
     public function index() {
