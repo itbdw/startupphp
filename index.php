@@ -18,13 +18,14 @@ include ROOT . DS . 'config' . DS . 'main.config.php';
 include ROOT . DS . 'config' . DS . 'city.config.php';
 
 function autoload_class($className) {
-    $dir = substr($className, 0, stripos('_', $className));
+//    $dir = substr($className, 0, stripos('_', $className));
     $file = strtolower(ROOT . DS . str_replace('_', DS, $className) . '.php');
 
     if (file_exists($file)) {
         include $file;
     } else {
-        trigger_error(404 . '|' .$dir . 'not found');
+        trigger_error(404 . ' | ' .$file . 'not found!');
+        die("error to load the file!");
     }
 }
 spl_autoload_register('autoload_class');
