@@ -1,6 +1,6 @@
 <?php
 /**
- *
+ * database sample
  * @author zhao.binyan
  * @since 2014-04-27
  */
