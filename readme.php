@@ -39,6 +39,7 @@ v1.0.1
 2014-04-26
 限制
 文件名不可以包含下划线
+自动加载规则示例 Model_Admin_User => model/admin/user.php => model/admin_user.php => model_admin_user.php
 
 
 v1.0
