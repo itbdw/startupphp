@@ -25,7 +25,7 @@ class Controller_Base {
     public function preventDirectInstance() {
         $ret = is_subclass_of($this, __CLASS__);
         if (!$ret) {
-            die('This page is not allowed to display!');
+            //die('This page is not allowed to display!');
         }
     }
 
@@ -55,7 +55,7 @@ class Controller_Base {
         }
     }
 
-    public function errorPage($code = 404, $msg = '出现错误了。。', $content='我擦，出bug了？您可以选择截图给开发人员。或者要不您回退一下浏览器吧，这真是一个悲伤的故事……') {
+    public function errorPage($code = 404, $msg = 'Page is not found', $content='This page is not found! 您可以选择截图给开发人员。或者要不您回退一下浏览器吧，这真是一个悲伤的故事……') {
 
         $this->output['code'] = $code;
         $this->output['msg'] = $msg;
