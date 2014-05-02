@@ -14,8 +14,19 @@ class Controller_Base {
     public $output;
 
     public function __construct() {
+        $this->preventDirectInstance();
         $base                            = $_SERVER['SCRIPT_NAME'];
         $this->output['static_base_url'] = rtrim(dirname($base), '/');
+    }
+
+    /**
+     * prevent base instance
+     */
+    public function preventDirectInstance() {
+        $ret = is_subclass_of($this, __CLASS__);
+        if (!$ret) {
+            die('This page is not allowed to display!');
+        }
     }
 
     /**
