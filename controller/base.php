@@ -61,6 +61,5 @@ class Controller_Base {
         $this->output['msg'] = $msg;
         $this->output['content'] = $content;
         $this->display('404.php');
-//        die("error_found: $code: $msg");
     }
 }

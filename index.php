@@ -23,7 +23,6 @@ include ROOT . DS . 'config' . DS . 'city.config.php';
 include ROOT . DS . 'config' . DS . 'db.config.php';
 
 function autoload_class($className) {
-//    $dir = substr($className, 0, stripos('_', $className));
     $flow       = explode('_', $className);
     $flow_count = count($flow);
 
@@ -75,7 +74,6 @@ class  Core {
         $controller = str_replace(' ', '_', $controller);
         $controller = str_replace('..', '', $controller);
         $file       = strtolower(ROOT . DS . str_replace('_', DS, $controller) . '.php');
-//        echo $file;
 
         if (!file_exists($file) || !is_readable($file)) {
             $controller = 'controller_base';
@@ -91,6 +89,7 @@ class  Core {
         $controller->$action();
     }
 }
+
 
 $core = new Core();
 $core->dispatch();
