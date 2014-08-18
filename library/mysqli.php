@@ -187,8 +187,8 @@ class Library_Mysqli extends Mysqli {
                 $where .= "$k = $v";
 		$where .= ' AND ';
             }
+            $where = substr($where, 0, -5);
         }
-        $where = substr($where, 0, -5);
 	return $where;
     }
 }
