@@ -22,6 +22,7 @@ class Model_Base {
             return $handle;
         } else {
             trigger_error('could not connect to database ' . $db_name . '. no config set.');
+            return false;
         }
     }
 }

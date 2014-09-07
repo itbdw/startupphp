@@ -25,7 +25,7 @@ include ROOT . DS . 'config' . DS . 'db.config.php';
 function autoload_class($className) {
     $flow       = explode('_', $className);
     $flow_count = count($flow);
-
+    $file       = '';
     //规则示例 Model_Admin_User => model/admin/user.php => model/admin_user.php => model_admin_user.php
     for ($i = 1; $i <= $flow_count; $i++) {
         $flow_dir  = array_slice($flow, 0, $flow_count - $i);

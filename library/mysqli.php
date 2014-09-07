@@ -148,7 +148,7 @@ class Library_Mysqli extends Mysqli {
      * @return mixed
      */
     public function safe_query($array) {
-        foreach ($array as $k => &$v) {
+        foreach ($array as &$v) {
             $v = $this->safe_word($v);
         }
         return $array;
@@ -171,7 +171,7 @@ class Library_Mysqli extends Mysqli {
      * need escape first
      *
      * @param array $array
-     * @return stringb
+     * @return string
      */
     public function parse_condition($array = array()) {
         $where = '';
