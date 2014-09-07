@@ -35,6 +35,13 @@ itbudaoweng@gmail.com
 
 
 /*
+v1.0.2
+2014-09-07
+格式化代码
+更新 request 类，增加 postData 方法
+更新 mysqli 类，支持where条件逻辑运算符的传入
+
+
 v1.0.1
 2014-04-26
 限制

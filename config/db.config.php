@@ -1,15 +1,15 @@
 <?php
 /**
  * database sample
+ *
  * @author zhao.binyan
- * @since 2014-04-27
+ * @since  2014-04-27
  */
 $GLOBALS['mysql_db']['host']     = 'localhost';
 $GLOBALS['mysql_db']['username'] = 'root';
 $GLOBALS['mysql_db']['password'] = '123456';
 $GLOBALS['mysql_db']['port']     = '3306';
 $GLOBALS['mysql_db']['database'] = 'app_seemimi';
-
 
 if (isset($_SERVER['HTTP_APPNAME'])) {
     $GLOBALS['mysql_db']['host']     = SAE_MYSQL_HOST_M;

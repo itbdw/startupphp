@@ -10,7 +10,7 @@
  * 控制器文件先行判断文件是否存在，即只会 Controller_test_demo => controller/test/demo.php
  *
  * @author zhao.binyan
- * @since 2014-01-11
+ * @since  2014-01-11
  */
 
 ini_set('display_errors', 'On');
@@ -56,11 +56,9 @@ spl_autoload_register('autoload_class');
  */
 class  Core {
     public function __construct() {
-
     }
 
     public function index() {
-
     }
 
     public function dispatch() {
@@ -89,7 +87,6 @@ class  Core {
         $controller->$action();
     }
 }
-
 
 $core = new Core();
 $core->dispatch();

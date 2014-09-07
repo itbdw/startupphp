@@ -1,9 +1,8 @@
 <?php
-
 /**
  *
  * @author zhao.binyan
- * @since 2014-01-11
+ * @since  2014-01-11
  */
 class Controller_Base {
     /**
@@ -55,10 +54,10 @@ class Controller_Base {
         }
     }
 
-    public function errorPage($code = 404, $msg = 'Page is not found', $content='This page is not found! 您可以选择截图给开发人员。或者要不您回退一下浏览器吧，这真是一个悲伤的故事……') {
+    public function errorPage($code = 404, $msg = 'Page is not found', $content = 'This page is not found! 您可以选择截图给开发人员。或者要不您回退一下浏览器吧，这真是一个悲伤的故事……') {
 
-        $this->output['code'] = $code;
-        $this->output['msg'] = $msg;
+        $this->output['code']    = $code;
+        $this->output['msg']     = $msg;
         $this->output['content'] = $content;
         $this->display('404.php');
     }

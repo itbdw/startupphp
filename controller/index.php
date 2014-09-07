@@ -1,16 +1,15 @@
 <?php
-
 /**
  *
  * @author zhao.binyan
- * @since 2014-01-11
+ * @since  2014-01-11
  */
 class Controller_Index extends Controller_Base {
 
     public function index() {
-        $ip       = $_SERVER['REMOTE_ADDR'];
-        $ipope    = new Library_Ip();
-        $location = $ipope->getAddr($ip);
+        $ip                       = $_SERVER['REMOTE_ADDR'];
+        $ipope                    = new Library_Ip();
+        $location                 = $ipope->getAddr($ip);
         $this->output['location'] = $location;
 
 //        $city['province'] = $GLOBALS['CONF_PROVINCE'];
@@ -32,7 +31,7 @@ class Controller_Index extends Controller_Base {
     }
 
     public function testDB() {
-        $db = new Model_Base();
+        $db     = new Model_Base();
         $handle = $db->getMysql('mysql_db');
 //        $ret = $handle->insert_array('seemimi_post', array('title'=>time(), 'content'=>'ss'));
 //        var_dump($ret);

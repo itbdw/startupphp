@@ -21,10 +21,10 @@
  * create date: 2012-08-25
  * update date: 2013-11-09
  *
- * @author Zhao Binyan <itbudaoweng@gmail.com>
+ * @author    Zhao Binyan <itbudaoweng@gmail.com>
  * @copyright 2011-2013 Zhao Binyan
- * @link http://yungbo.com
- * @link http://weibo.com/itbudaoweng
+ * @link      http://yungbo.com
+ * @link      http://weibo.com/itbudaoweng
  */
 
 /**
@@ -48,8 +48,9 @@
  * qqwry.dat 文件为纯真网络的IP库文件
  * 升级非常方便，安装纯真ip库软件，先对 ip.exe 进行升级，
  * 然后将目录下的 qqary.dat 文件复制过来覆盖掉旧的文件即可。
- * @author 马秉尧，赵彬言<itbudaoweng@gmail.com>
- * @version 2.0
+ *
+ * @author    马秉尧，赵彬言<itbudaoweng@gmail.com>
+ * @version   2.0
  * @copyright 2005 CoolCode.CN，2012-1013 yungbo.com
  */
 class Library_Ip {
@@ -85,12 +86,14 @@ class Library_Ip {
      * 输出的字符编码
      *
      * 默认是 UTF-8
+     *
      * @var string
      */
     public $out_charset = 'UTF-8';
 
     /**
      * 运营商词典
+     *
      * @var array
      */
     public $dict_isp = array(
@@ -99,6 +102,7 @@ class Library_Ip {
 
     /**
      * 中国直辖市
+     *
      * @var array
      */
     public $dict_city_directly = array(
@@ -107,6 +111,7 @@ class Library_Ip {
 
     /**
      * 中国省份
+     *
      * @var array
      */
     public $dict_province = array(
@@ -217,7 +222,6 @@ class Library_Ip {
                         }
                     }
                 }
-
             } else {
                 //处理内蒙古不带省份类型的和直辖市
                 foreach ($this->dict_province as $key => $value) {
@@ -272,7 +276,6 @@ class Library_Ip {
                         break;
                     }
                 }
-
             }
 
             if ($is_china) {
@@ -297,7 +300,6 @@ class Library_Ip {
                     $result[$key] = iconv('GBK', $this->out_charset, $value);
                 }
             }
-
         }
         return $result; //array
     }
@@ -392,6 +394,7 @@ class Library_Ip {
      *
      * php 的 ip2long 这个函数有问题
      * 133.205.0.0 ==>> 2244804608
+     *
      * @param string $ip 要转换的 ip 地址
      * @return int    转换完成的数字
      */
