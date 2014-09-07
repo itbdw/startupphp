@@ -51,7 +51,8 @@ class Library_Request {
 
         $ch = curl_init();
         curl_setopt_array($ch, ($options + $defaults));
-        if (!$result = curl_exec($ch)) {
+        $result = curl_exec($ch);
+        if (!$result) {
             trigger_error(curl_error($ch));
             trigger_error("post data to $url failed");
         }
