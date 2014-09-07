@@ -9,7 +9,7 @@ class Library_Request {
     public $get;
     public $post;
     public $request;
-    public $timeOut = 4;
+    public $timeout = 4;
 
     public function __construct() {
         $this->get     = $_GET;
@@ -45,7 +45,7 @@ class Library_Request {
             CURLOPT_FRESH_CONNECT  => true,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FORBID_REUSE   => true,
-            CURLOPT_TIMEOUT        => $this->timeOut,
+            CURLOPT_TIMEOUT        => $this->timeout,
             CURLOPT_POSTFIELDS     => $post
         );
 
@@ -53,6 +53,7 @@ class Library_Request {
         curl_setopt_array($ch, ($options + $defaults));
         if (!$result = curl_exec($ch)) {
             trigger_error(curl_error($ch));
+            trigger_error("post data to $url failed");
         }
         curl_close($ch);
         return $result;
