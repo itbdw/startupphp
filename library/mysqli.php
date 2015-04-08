@@ -1,46 +1,105 @@
 <?php
 /**
- * A Mysqli Class Extends From Mysqli
+ * 智能MySQLi类，继承原生 MySQLi
  *
- * You can use the origin mysqli method as you wish
- * DO mind the sql injection if you write sql by yourself
+ * $mysql = Library_Mysqli::getInstance($host, $username, $password, $dbname, $port);
  *
- * 仅仅支持基本的增删改查以及AND连接，OR JOIN 等语句需要自己写SQL，然后可以执行find_sql结构化返回的结果
+ * 没做复杂封装，方便简单使用，同时继承原生 MySQLi 全部功能
  *
- * 条件查询支持运算符，默认是=
- * $where = array('a'=>2);
- * $where = array('a>'=>1);
+ * 根据个人喜好使用即可
  *
+ * 示例
+ * $mysql = Library_Mysqli::getInstance($host, $username, $password, $dbname, $port, true);
+ * $mysql->maxTolerateTime = '0.0001';
+ * $ret   = $mysql->find('deploy_log', array('uid >='=>'17', 'time_start>='=>1397554060));
+ *
+ * @property Library_Mysqli[] $instances
  * @author zhao.binyan
- * @since  2014-04-26
+ * @since  2015-04-08
  */
 class Library_Mysqli extends Mysqli {
-    protected $database;
+    private static $instances = array();
+    private $host;
+    private $username;
+    private $password;
+    private $dbname;
+    private $port;
+
+    public $maxTolerateTime = 1.5;
+
+    final public function __construct($host, $username, $password, $dbname, $port) {
+        parent::__construct($host, $username, $password, $dbname, $port);
+        $this->host     = $host;
+        $this->username = $username;
+        $this->password = $password;
+        $this->dbname   = $dbname;
+        $this->port     = $port;
+//        trigger_error('init resourse ' . $this->host . ':' . $this->port . ':' . $this->dbname);
+    }
 
     /**
-     * @param string $host
-     * @param null   $username
-     * @param null   $password
-     * @param null   $dbname
-     * @param null   $port
-     * @param null   $socket
+     * @param      $host
+     * @param      $username
+     * @param      $password
+     * @param      $dbname
+     * @param      $port
+     * @param bool $persistent
+     * @return Library_Mysqli
      */
-    public function __construct($host, $username = null, $password = null, $dbname = null, $port = null, $socket = null) {
-        parent::__construct($host, $username, $password, $dbname, $port, $socket);
+    public function getInstance($host, $username, $password, $dbname, $port, $persistent = false) {
+        if ($persistent) {
+            $host = 'p:' . $host;
+        }
+        $key = $host . $dbname . $port;
+        if (empty(self::$instances[$key])
+            || !(self::$instances[$key] instanceof self)
+            || !self::$instances[$key]->ping()
+        ) {
+            self::$instances[$key] = new Base_Helper_Mysqli($host, $username, $password, $dbname, $port);
+
+            if (self::$instances[$key]->connect_errno) {
+                $logerror = sprintf("Mysqli Connect Error, Host:%s, Error:%s", $host . ':' . $port . ':' . $dbname, self::$instances[$key]->connect_errno . ' ' . self::$instances[$key]->connect_error);
+                trigger_error($logerror, E_USER_WARNING);
+            }
+
+            self::$instances[$key]->real_query("SET NAMES UTF8");
+        }
+        return self::$instances[$key];
+    }
+
+    /**
+     * @param string $sql
+     * @return bool|mysqli_result
+     */
+    public function query($sql) {
+        $time   = microtime(true);
+        $result = parent::query($sql);
+        $this->logError($sql, microtime(true) - $time);
+        return $result;
+    }
+
+    /**
+     *
+     * @param $sql
+     * @return bool
+     */
+    public function real_query($sql) {
+        $time   = microtime(true);
+        $result = parent::real_query($sql);
+        $this->logError($sql, microtime(true) - $time);
+        return $result;
     }
 
     /**
      * @param string $table
-     * @param array  $array
+     * @param array  $data
      * @return bool
      */
-    public function insert_array($table = '', $array = array()) {
-        $array = $this->safe_query($array);
-
+    public function insert($table = '', $data = array()) {
+        $array  = $this->safeQuery($data);
         $fields = implode(',', array_keys($array));
         $values = implode(',', array_values($array));
-
-        $sql = "INSERT INTO $table ($fields) VALUES ($values)";
+        $sql    = "INSERT INTO $table ($fields) VALUES ($values)";
         return $this->real_query($sql);
     }
 
@@ -50,31 +109,51 @@ class Library_Mysqli extends Mysqli {
      * @param array  $where
      * @return bool
      */
-    public function update_array($table = '', $update = array(), $where = array()) {
-
-        $update = $this->safe_query($update);
-        $where  = $this->safe_query($where);
-
-        $update = $this->parse_condition($update);
-        $where  = $this->parse_condition($where);
+    public function update($table = '', $update = array(), $where = array()) {
+        $update = $this->safeQuery($update);
+        $where  = $this->safeQuery($where);
+        $update = $this->parseCondition($update);
+        $where  = $this->parseCondition($where);
         if ($update == '') {
             return false;
         }
-
         //REPLACE 'WHERE' TO 'SET'
-        $update = ' SET ' . mb_substr($update, 6);
+        $update = 'SET ' . mb_substr($update, 6);
         $sql    = "UPDATE $table $update $where";
         return $this->real_query($sql);
     }
 
     /**
+     * 依赖MySQL的索引、约束，需要强烈配合MySQL，依靠PHP是在高并发环境下是不可信的
+     *
      * @param string $table
-     * @param array  $array
+     * @param array  $data
+     * @param array  $preseve_columns 这些字段在冲突时不会更新
      * @return bool
      */
-    public function delete_array($table = '', $array = array()) {
-        $array = $this->safe_query($array);
-        $where = $this->parse_condition($array);
+    public function upsert($table = '', $data = array(), $preseve_columns = array()) {
+        $array  = $this->safeQuery($data);
+        $fields = implode(',', array_keys($array));
+        $values = implode(',', array_values($array));
+
+        foreach ($preseve_columns as $val) {
+            unset($array[$val]);
+        }
+
+        $update = $this->parseCondition($array);
+        $update = mb_substr($update, 6);
+        $sql    = "INSERT INTO $table ($fields) VALUES ($values) ON DUPLICATE KEY UPDATE $update";
+        return $this->real_query($sql);
+    }
+
+    /**
+     * @param string $table
+     * @param array  $where
+     * @return bool
+     */
+    public function delete($table = '', $where = array()) {
+        $array = $this->safeQuery($where);
+        $where = $this->parseCondition($array);
         if ($where == '') {
             return false;
         }
@@ -84,24 +163,21 @@ class Library_Mysqli extends Mysqli {
 
     /**
      * @param string $table
-     * @param array  $array
+     * @param array  $where
      * @param array  $fields_array
      * @param array  $sort
      * @param int    $limit
      * @param int    $offset
      * @return array
      */
-    public function find_array($table = '', $array = array(), $fields_array = array(), $sort = array(), $limit = 20, $offset = 0) {
-        $array = $this->safe_query($array);
-
+    public function find($table = '', $where = array(), $fields_array = array(), $sort = array(), $limit = 20, $offset = 0) {
+        $array  = $this->safeQuery($where);
         $fields = '*';
         $order  = '';
-        $where  = $this->parse_condition($array);
-
+        $where  = $this->parseCondition($array);
         if ($fields_array) {
             $fields = implode(',', $fields_array);
         }
-
         if ($sort) {
             $order .= ' ORDER BY ';
             foreach ($sort as $k => $v) {
@@ -109,22 +185,20 @@ class Library_Mysqli extends Mysqli {
             }
             $order = substr($order, 0, strlen($order) - 1);
         }
-
         $sql = "SELECT $fields FROM $table $where $order LIMIT $limit OFFSET $offset";
-        return $this->find_sql($sql);
+        return $this->findBySql($sql);
     }
 
     /**
      * @param string $table
-     * @param array  $array
+     * @param array  $where
      * @return array
      */
-    public function find_count($table = '', $array = array()) {
-        $array = $this->safe_query($array);
-        $where = $this->parse_condition($array);
-
-        $sql = "SELECT count(*) as count FROM $table $where";
-        $tmp = $this->find_sql($sql);
+    public function findCount($table = '', $where = array()) {
+        $array = $this->safeQuery($where);
+        $where = $this->parseCondition($array);
+        $sql   = "SELECT count(*) as count FROM $table $where";
+        $tmp   = $this->findBySql($sql);
         return $tmp[0]['count'];
     }
 
@@ -132,9 +206,9 @@ class Library_Mysqli extends Mysqli {
      * @param $sql
      * @return array
      */
-    public function find_sql($sql) {
+    public function findBySql($sql) {
         $tmp = array();
-        if ($result = self::query($sql)) {
+        if ($result = $this->query($sql)) {
             while ($cache = $result->fetch_assoc()) {
                 $tmp[] = $cache;
             }
@@ -144,12 +218,14 @@ class Library_Mysqli extends Mysqli {
     }
 
     /**
+     * 过滤危险数组value
+     *
      * @param $array
      * @return mixed
      */
-    public function safe_query($array) {
+    public function safeQuery($array) {
         foreach ($array as &$v) {
-            $v = $this->safe_word($v);
+            $v = $this->safeWord($v);
         }
         return $array;
     }
@@ -160,7 +236,7 @@ class Library_Mysqli extends Mysqli {
      * @param $word
      * @return string
      */
-    public function safe_word($word) {
+    public function safeWord($word) {
         if (!is_numeric($word)) {
             $word = "'" . $this->real_escape_string($word) . "'";
         }
@@ -173,15 +249,15 @@ class Library_Mysqli extends Mysqli {
      * @param array $array
      * @return string
      */
-    public function parse_condition($array = array()) {
+    public function parseCondition($array = array()) {
         $where = '';
         if ($array) {
-            $where .= ' WHERE ';
+            $where .= 'WHERE ';
             foreach ($array as $k => $v) {
                 $op = preg_replace('/^\w+/', '', $k);
                 $k  = str_replace($op, '', $k);
+                $op = trim($op);
                 $op = $op ? $op : '=';
-
                 $where .= "`$k` $op $v";
                 $where .= ' AND ';
             }
@@ -190,23 +266,38 @@ class Library_Mysqli extends Mysqli {
         return $where;
     }
 
+    /**
+     * @param string $db
+     * @return bool|void
+     */
     public function select_db($db) {
+        $this->dbname = $db;
         parent::select_db($db);
     }
 
     /**
-     * @param string $sql
-     * @return bool|mysqli_result
+     * @param $sql
+     * @param $timespend
      */
-    public function query($sql) {
-        return parent::query($sql);
+    public function logError($sql, $timespend) {
+
+        if ($this->errno) {
+            $exeuse_error = sprintf("Mysqli Execuse Error, Host:%s, Error:%s, Sql:%s", $this->host . ':' . $this->port . ':' . $this->dbname, $this->errno . ' ' . $this->error . ' ' . $this->sqlstate, $sql);
+
+            trigger_error($exeuse_error, E_USER_WARNING);
+        }
+
+        if ($timespend > $this->maxTolerateTime) {
+            $timespend_error = sprintf("Mysqli Execuse Time Is Too Long, Host:%s, Realtime:%s, Toterate Time:%s, Sql:%s", $this->host . ':' . $this->port . ':' . $this->dbname, $timespend, $this->maxTolerateTime, $sql);
+            trigger_error($timespend_error, E_USER_WARNING);
+        }
     }
 
     /**
-     * @param $sql
-     * @return bool
+     *
      */
-    public function real_query($sql) {
-        return parent::real_query($sql);
+    public function __destruct() {
+        $this->close();
+//        trigger_error('clear resourse ' . $this->host . ':' . $this->port . ':' . $this->dbname);
     }
 }
